@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台灣人生財務模擬器 2026 | 平行時空資產推演</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for responsive visual charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- html2canvas for 1-click social card export -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <!-- Google Fonts: Inter & Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            accent: {
+              teal: '#14b8a6',
+              amber: '#f59e0b',
+              rose: '#f43f5e',
+              purple: '#a855f7'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #f3f4f6;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-glow {
+      box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.25);
+    }
+    /* Custom Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: #1f2937;
+      height: 8px;
+      border-radius: 9999px;
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #6366f1;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+      border: 2px solid #ffffff;
+      transition: transform 0.15s ease;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .option-btn {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .option-btn.selected {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.15);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.25);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="border-b border-gray-800/80 bg-gray-950/60 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center font-black text-white shadow-md">
+          TW
+        </div>
+        <span class="font-bold tracking-tight text-lg text-white">台灣人生財務模擬器 <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 font-medium ml-1">2026 數據版</span></span>
+      </div>
+      <div id="step-indicator" class="hidden text-xs text-gray-400 font-medium">
+        題目進度 <span id="current-step-num" class="text-brand-400 font-bold">1</span> / 10
+      </div>
+    </div>
+    <!-- Interactive Progress bar -->
+    <div id="progress-container" class="hidden w-full bg-gray-800 h-1">
+      <div id="progress-bar" class="bg-gradient-to-r from-brand-500 to-accent-teal h-1 transition-all duration-300" style="width: 10%;"></div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-3xl mx-auto w-full px-4 py-8 flex-1">
+
+    <!-- Screen 0: Intro Hero -->
+    <div id="screen-intro" class="text-center py-6 sm:py-10">
+      <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-medium mb-6">
+        <span>✨ 內建主計總處真實薪資 PR · 22 縣市實價登錄 · 2026 所得稅法</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
+        如果當初不買房、不生小孩<br class="hidden sm:inline">
+        <span class="bg-gradient-to-r from-indigo-400 via-purple-300 to-teal-300 bg-clip-text text-transparent">你在平行時空會有多少錢？</span>
+      </h1>
+      <p class="text-gray-400 max-w-xl mx-auto text-base sm:text-lg mb-8 leading-relaxed">
+        透過 10 個最接地氣的人生重大財務抉擇，精算你的實質資產累積，並平行比對「極致不生」與「純租屋存股」的人生差距。
+      </p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl mx-auto mb-10 text-left text-xs text-gray-300">
+        <div class="p-3 rounded-xl bg-gray-900/60 border border-gray-800">
+          <div class="text-brand-400 font-bold mb-1">📊 全台薪資 PR</div>
+          <div>即時推算落點排位</div>
+        </div>
+        <div class="p-3 rounded-xl bg-gray-900/60 border border-gray-800">
+          <div class="text-accent-teal font-bold mb-1">🏠 22 縣市房價</div>
+          <div>中古 vs 新成屋房貸</div>
+        </div>
+        <div class="p-3 rounded-xl bg-gray-900/60 border border-gray-800">
+          <div class="text-accent-rose font-bold mb-1">👶 育兒才藝月嫂</div>
+          <div>三明治世代支出盤點</div>
+        </div>
+        <div class="p-3 rounded-xl bg-gray-900/60 border border-gray-800">
+          <div class="text-accent-purple font-bold mb-1">🌌 4大平行時空</div>
+          <div>30 年資產對照圖</div>
+        </div>
+      </div>
+
+      <button onclick="startWizard()" class="px-8 py-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-lg shadow-lg shadow-brand-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+        🚀 開始人生財務推演 (約 3 分鐘)
+      </button>
+    </div>
+
+    <!-- Screen 1: Question Wizard Container -->
+    <div id="screen-wizard" class="hidden">
+
+      <!-- Step 1: 年齡、職業與年薪 PR -->
+      <div id="step-1" class="step-card">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 1 / 10 · 起跑線</span>
+          <h2 class="text-2xl font-bold text-white mt-1">你的目前年齡、產業與年薪水準？</h2>
+          <p class="text-gray-400 text-sm mt-1">拉動滑桿，系統即時比對主計總處資料庫，推算全台受僱員工與同業 PR 排位。</p>
+        </div>
+
+        <div class="space-y-6">
+          <!-- 年齡 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">目前年齡：<span id="label-age" class="text-brand-400 font-bold text-base">28</span> 歲</label>
+            <input type="range" id="input-age" min="20" max="55" value="28" oninput="updateAge(this.value)">
+          </div>
+
+          <!-- 產業 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">產業分類</label>
+            <select id="input-industry" onchange="calculatePR()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500">
+              <option value="tech">科技 / 半導體 / 軟硬體研發</option>
+              <option value="finance">金融保險 / 證券投資 / 銀行</option>
+              <option value="professional">專門職業 (會計 / 法律 / 顧問 / 建築)</option>
+              <option value="med_edu">醫療醫事 / 公務員 / 公私立教職</option>
+              <option value="manufacturing">傳產製造 / 工程營造 / 物流</option>
+              <option value="service" selected>服務 / 餐飲 / 零售 / 觀光</option>
+              <option value="freelance">自由接案 / 自營商 / 創作</option>
+            </select>
+          </div>
+
+          <!-- 年薪滑桿與 PR 徽章 -->
+          <div class="bg-gray-900/80 p-5 rounded-2xl border border-gray-800">
+            <div class="flex justify-between items-end mb-2">
+              <label class="text-sm font-medium text-gray-300">個人年薪 (含固定年終與獎金)</label>
+              <div class="text-right">
+                <span id="label-salary" class="text-2xl font-black text-brand-400">60</span>
+                <span class="text-gray-400 text-sm"> 萬元 / 年</span>
+              </div>
+            </div>
+            <input type="range" id="input-salary" min="30" max="450" step="2" value="60" oninput="updateSalary(this.value)" class="mb-4">
+
+            <!-- 即時動態 PR 徽章 -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <div class="flex-1 bg-gray-950/80 border border-brand-500/30 rounded-xl p-3 flex items-center space-x-3">
+                <div class="text-2xl">🇹🇼</div>
+                <div>
+                  <div class="text-xs text-gray-400">超越全台上班族</div>
+                  <div class="text-base font-bold text-white">排位 PR <span id="pr-taiwan" class="text-brand-400 font-black text-lg">56</span></div>
+                </div>
+              </div>
+              <div class="flex-1 bg-gray-950/80 border border-indigo-500/30 rounded-xl p-3 flex items-center space-x-3">
+                <div class="text-2xl">💼</div>
+                <div>
+                  <div class="text-xs text-gray-400">該產業同儕排位</div>
+                  <div class="text-base font-bold text-white">約 PR <span id="pr-industry" class="text-indigo-400 font-black text-lg">58</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: 感情與家庭組態 -->
+      <div id="step-2" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 2 / 10 · 伴侶組態</span>
+          <h2 class="text-2xl font-bold text-white mt-1">你的感情狀態與家庭財務分工？</h2>
+          <p class="text-gray-400 text-sm mt-1">伴侶能帶來租房與生活的「規模經濟」，但也涉及雙方薪資的結合。</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3.5 mb-6">
+          <button onclick="selectOption('partnerType', 'single', this)" class="option-btn text-left p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80 selected">
+            <div class="font-bold text-white flex items-center space-x-2">
+              <span>👤 單身一人自由行</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-300">一人扛房租/房貸</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">財務決策 100% 自主，生活彈性最高，但無法享受生活開銷分攤效應。</p>
+          </button>
+
+          <button onclick="selectOption('partnerType', 'dual_income', this)" class="option-btn text-left p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80">
+            <div class="font-bold text-white flex items-center space-x-2">
+              <span>👫 穩定雙薪伴侶</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-brand-500/20 text-brand-300">強大生活規模經濟</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">水電房租共同分攤（雙人開銷約僅為單人 1.5 倍），大幅提升現金流與購屋承擔力。</p>
+          </button>
+
+          <button onclick="selectOption('partnerType', 'single_income', this)" class="option-btn text-left p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800/80">
+            <div class="font-bold text-white flex items-center space-x-2">
+              <span>🏠 單薪支撐 (伴侶全職持家)</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300">一人擔家庭經濟</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">全心打拼事業，免除昂貴托育保母費用，但一人扛起全家生計與風險防禦。</p>
+          </button>
+        </div>
+
+        <!-- 伴侶年薪滑桿 (雙薪時顯示) -->
+        <div id="partner-salary-block" class="hidden bg-gray-900/80 p-5 rounded-2xl border border-brand-500/30">
+          <div class="flex justify-between items-end mb-2">
+            <label class="text-sm font-medium text-gray-300">伴侶年薪估計</label>
+            <div class="text-right">
+              <span id="label-partner-salary" class="text-xl font-bold text-brand-400">60</span>
+              <span class="text-gray-400 text-sm"> 萬元 / 年</span>
+            </div>
+          </div>
+          <input type="range" id="input-partner-salary" min="30" max="300" step="2" value="60" oninput="updatePartnerSalary(this.value)">
+        </div>
+      </div>
+
+      <!-- Step 3: 全台 22 縣市與居住大抉擇 -->
+      <div id="step-3" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 3 / 10 · 居住置產</span>
+          <h2 class="text-2xl font-bold text-white mt-1">生活在哪個縣市？打算買房還是租屋？</h2>
+          <p class="text-gray-400 text-sm mt-1">內建 22 縣市實價登錄標準三房中位數，連動新青安 40 年或商業 30 年房貸。</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- 縣市選單 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-300 mb-2">落腳縣市 (涵蓋全台)</label>
+            <select id="input-county" onchange="updateCountyData()" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-500">
+              <optgroup label="北部核心都會">
+                <option value="tpe">台北市 (新成屋 2,900萬 / 中古 1,950萬 / 租 2.8萬)</option>
+                <option value="ntpc" selected>新北市 (新成屋 1,850萬 / 中古 1,250萬 / 租 2.2萬)</option>
+                <option value="tyc">桃園市 (新成屋 1,350萬 / 中古 920萬 / 租 1.6萬)</option>
+                <option value="hcc">新竹市 (新成屋 1,950萬 / 中古 1,350萬 / 租 2.1萬)</option>
+                <option value="hch">新竹縣 (新成屋 1,800萬 / 中古 1,250萬 / 租 1.9萬)</option>
+                <option value="klc">基隆市 (新成屋 850萬 / 中古 550萬 / 租 1.3萬)</option>
+                <option value="ila">宜蘭縣 (新成屋 1,080萬 / 中古 720萬 / 租 1.4萬)</option>
+              </optgroup>
+              <optgroup label="中部區域">
+                <option value="txg">台中市 (新成屋 1,550萬 / 中古 1,050萬 / 租 1.8萬)</option>
+                <option value="chw">彰化縣 (新成屋 1,050萬 / 中古 720萬 / 租 1.3萬)</option>
+                <option value="nth">南投縣 (新成屋 920萬 / 中古 620萬 / 租 1.2萬)</option>
+                <option value="mlh">苗栗縣 (新成屋 950萬 / 中古 650萬 / 租 1.3萬)</option>
+                <option value="ylh">雲林縣 (新成屋 880萬 / 中古 580萬 / 租 1.2萬)</option>
+              </optgroup>
+              <optgroup label="南部區域">
+                <option value="tnn">台南市 (新成屋 1,300萬 / 中古 880萬 / 租 1.5萬)</option>
+                <option value="khh">高雄市 (新成屋 1,380萬 / 中古 920萬 / 租 1.6萬)</option>
+                <option value="cyi">嘉義市 (新成屋 1,050萬 / 中古 700萬 / 租 1.4萬)</option>
+                <option value="cyh">嘉義縣 (新成屋 860萬 / 中古 560萬 / 租 1.1萬)</option>
+                <option value="pth">屏東縣 (新成屋 890萬 / 中古 590萬 / 租 1.2萬)</option>
+              </optgroup>
+              <optgroup label="東部與離島">
+                <option value="hua">花蓮縣 (新成屋 950萬 / 中古 650萬 / 租 1.3萬)</option>
+                <option value="ttt">台東縣 (新成屋 900萬 / 中古 600萬 / 租 1.2萬)</option>
+                <option value="pen">澎湖縣 (新成屋 920萬 / 中古 600萬 / 租 1.2萬)</option>
+                <option value="kin">金門縣 (新成屋 980萬 / 中古 650萬 / 租 1.2萬)</option>
+                <option value="lie">連江縣 (馬祖) (新成屋 920萬 / 中古 600萬 / 租 1.2萬)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- 居住模式三選一 -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button onclick="selectOption('housingType', 'rent', this)" class="option-btn text-left p-3.5 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+              <div class="font-bold text-white text-sm">🎒 租屋自由派</div>
+              <div class="text-xs text-gray-400 mt-1">免頭期款，資金留投資大盤，隨工作彈性搬遷。</div>
+            </button>
+            <button onclick="selectOption('housingType', 'used_house', this)" class="option-btn text-left p-3.5 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800 selected">
+              <div class="font-bold text-white text-sm">🔨 成熟中古屋</div>
+              <div class="text-xs text-gray-400 mt-1">總價約 7 折，預備 80 萬裝修基金，性價比最高。</div>
+            </button>
+            <button onclick="selectOption('housingType', 'new_house', this)" class="option-btn text-left p-3.5 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+              <div class="font-bold text-white text-sm">✨ 全新成屋/預售</div>
+              <div class="text-xs text-gray-400 mt-1">公設完整免修繕，但總價最高、自備款門檻深。</div>
+            </button>
+          </div>
+
+          <!-- 房貸方案 (買房時顯示) -->
+          <div id="mortgage-plan-block" class="bg-gray-900/80 p-4 rounded-xl border border-gray-800">
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">房貸還款偏好</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button onclick="selectOption('mortgageType', 'youth', this)" class="option-btn text-left p-3 rounded-lg border border-gray-800 bg-gray-950/60 selected">
+                <div class="text-xs font-bold text-brand-300">新青安 40 年專案</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">優惠利率 + 5年寬限期，月還款壓力降至最低</div>
+              </button>
+              <button onclick="selectOption('mortgageType', 'standard', this)" class="option-btn text-left p-3 rounded-lg border border-gray-800 bg-gray-950/60">
+                <div class="text-xs font-bold text-gray-200">商業房貸 30 年期</div>
+                <div class="text-[11px] text-gray-400 mt-0.5">利息總額少，早 10 年無債一身輕</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: 交通通勤與購車 -->
+      <div id="step-4" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 4 / 10 · 通勤代步</span>
+          <h2 class="text-2xl font-bold text-white mt-1">平常主要的代步工具？</h2>
+          <p class="text-gray-400 text-sm mt-1">「買車是負資產」？檢視買車折舊、保險、牌照燃料稅對長期複利的影響。</p>
+        </div>
+
+        <div class="space-y-3">
+          <button onclick="selectOption('transportType', 'transit', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800 selected">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🚇 TPASS 大眾運輸 / 機車通勤</span>
+              <span class="text-xs text-accent-teal font-medium">月均約 1,500 元</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">極致省錢抗通膨，無折舊與停車位負擔，將最大資金注入投資複利。</p>
+          </button>
+
+          <button onclick="selectOption('transportType', 'used_car', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🚗 務實中古 / 國產代步車</span>
+              <span class="text-xs text-amber-400 font-medium">購車 45萬 · 年養車約 7 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">兼顧假日出遊與遮風避雨，折舊已趨緩，稅金與保養維修經濟實惠。</p>
+          </button>
+
+          <button onclick="selectOption('transportType', 'luxury_car', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🏎️ 全新進口 / 歐系性能好車</span>
+              <span class="text-xs text-rose-400 font-medium">車貸 2.5萬/月 · 年養車約 18 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">極致安全與駕駛樂趣，但前 5 年折舊顯著，乙式車險與原廠保養負擔重。</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5: 親情帳單：孝親費 -->
+      <div id="step-5" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 5 / 10 · 親情帳單</span>
+          <h2 class="text-2xl font-bold text-white mt-1">每個月需要提供長輩孝親費嗎？</h2>
+          <p class="text-gray-400 text-sm mt-1">台灣特有的家庭文化，每月數千到上萬的固定金流，長期對資產影響深遠。</p>
+        </div>
+
+        <div class="space-y-3">
+          <button onclick="selectOption('filialSupport', '0', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800 selected">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🌱 0 元 (各自安好，長輩有自足退休金)</span>
+              <span class="text-xs text-accent-teal font-medium">年支出 0 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">長輩有自住房與勞退/終身俸，不需子女補貼生活，甚至偶爾資助孫輩。</p>
+          </button>
+
+          <button onclick="selectOption('filialSupport', '5000', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🧧 心意紅包型 (約 5,000 元 / 月)</span>
+              <span class="text-xs text-gray-300 font-medium">年支出 6 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">逢年過節紅包加總攤提，或補貼長輩手機費與保健品心意。</p>
+          </button>
+
+          <button onclick="selectOption('filialSupport', '12000', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🍲 標準回饋型 (約 12,000 元 / 月)</span>
+              <span class="text-xs text-amber-400 font-medium">年支出 14.4 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">實質分擔老家水電、採買買菜金，善盡為人子女的基礎奉養。</p>
+          </button>
+
+          <button onclick="selectOption('filialSupport', '22000', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🏛️ 家庭支柱型 (22,000 元+ / 月)</span>
+              <span class="text-xs text-rose-400 font-medium">年支出 26.4 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">長輩無自住房或需定期照護與醫藥開銷，由你擔任全家的核心財務支柱。</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 6: 家庭醫療與商業保險 -->
+      <div id="step-6" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 6 / 10 · 風險防禦</span>
+          <h2 class="text-2xl font-bold text-white mt-1">你與家庭的商業保險規劃到哪裡？</h2>
+          <p class="text-gray-400 text-sm mt-1">面對自費標靶藥物、達文西手術或意外，你的財務防禦力有多厚？</p>
+        </div>
+
+        <div class="space-y-3">
+          <button onclick="selectOption('insuranceType', 'nhi_only', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🩹 健保裸奔流 (僅全民健保)</span>
+              <span class="text-xs text-accent-teal font-medium">年保費 ~0 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">省下所有保費全速存股，但若遇自費手術或癌症藥物，需全額自掏腰包動用本金。</p>
+          </button>
+
+          <button onclick="selectOption('insuranceType', 'basic', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800 selected">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🛡️ 實用基礎防禦 (雙實支實付 + 意外險)</span>
+              <span class="text-xs text-brand-300 font-medium">每人年保費約 3 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">小資最推薦 CP 值組合，轉嫁住院自費差額與意外雜費，守住第一線預備金。</p>
+          </button>
+
+          <button onclick="selectOption('insuranceType', 'premium', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center">
+              <span class="font-bold text-white">🏰 頂規金鐘罩 (實支 + 重疾 + 癌症 + 失能)</span>
+              <span class="text-xs text-indigo-300 font-medium">每人年保費約 6.5 萬</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">極致全面防禦，包含數百萬一次金給付與長期失能照顧，家庭風險近乎零死角。</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 7: 育兒大考驗 (一) 胎數、月子與嬰兒托育 -->
+      <div id="step-7" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 7 / 10 · 育兒大關 (一)</span>
+          <h2 class="text-2xl font-bold text-white mt-1">生幾胎？產後坐月子與 0-3 歲托育方式？</h2>
+          <p class="text-gray-400 text-sm mt-1">產後護理之家、月嫂與是否辭職帶小孩，是三明治世代現金流的巨大轉折點。</p>
+        </div>
+
+        <div class="space-y-5">
+          <!-- 胎數 -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">規劃生育胎數</label>
+            <div class="grid grid-cols-3 gap-3">
+              <button onclick="setChildCount(0, this)" class="option-btn text-center p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                <span class="font-bold text-white text-sm">不生 (頂客族)</span>
+              </button>
+              <button onclick="setChildCount(1, this)" class="option-btn text-center p-3 rounded-xl border border-gray-800 bg-gray-900/60 selected">
+                <span class="font-bold text-white text-sm">生 1 胎</span>
+              </button>
+              <button onclick="setChildCount(2, this)" class="option-btn text-center p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                <span class="font-bold text-white text-sm">生 2 胎 (熱鬧)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 月子與托育 (有生小孩才顯示) -->
+          <div id="childcare-options" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">產後月子照護</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button onclick="selectOption('postpartumType', 'home', this)" class="option-btn text-left p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                  <div class="text-xs font-bold text-white">長輩幫忙 / 在家吃補</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">約 4 萬元 (省錢但耗神)</div>
+                </button>
+                <button onclick="selectOption('postpartumType', 'doula', this)" class="option-btn text-left p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                  <div class="text-xs font-bold text-white">到府月嫂 (30天)</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">約 12 萬元 (彈性兼具)</div>
+                </button>
+                <button onclick="selectOption('postpartumType', 'center', this)" class="option-btn text-left p-3 rounded-xl border border-gray-800 bg-gray-900/60 selected">
+                  <div class="text-xs font-bold text-white">頂級月子中心 (30天)</div>
+                  <div class="text-[11px] text-gray-400 mt-0.5">約 26 萬元 (專業全包照護)</div>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">0~3 歲托嬰育兒模式</label>
+              <div class="space-y-2">
+                <button onclick="selectOption('daycareType', 'daycare', this)" class="option-btn text-left w-full p-3 rounded-xl border border-gray-800 bg-gray-900/60 selected">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="font-bold text-white">雙薪送準公共托嬰 / 保母 (扣除政府補助)</span>
+                    <span class="text-brand-300">月自付約 1.2 萬</span>
+                  </div>
+                </button>
+                <button onclick="selectOption('daycareType', 'grandparent', this)" class="option-btn text-left w-full p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="font-bold text-white">爺奶長輩全天帶 (感恩紅包 + 尿布伙食)</span>
+                    <span class="text-accent-teal">月自付約 0.9 萬</span>
+                  </div>
+                </button>
+                <button onclick="selectOption('daycareType', 'quit_job', this)" class="option-btn text-left w-full p-3 rounded-xl border border-gray-800 bg-gray-900/60">
+                  <div class="flex justify-between items-center text-xs">
+                    <span class="font-bold text-white">單方辭職或長期全職育兒</span>
+                    <span class="text-rose-400">永久損失 1 份年薪至小學</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: 育兒大考驗 (二) 幼兒園與課後才藝安親 -->
+      <div id="step-8" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 8 / 10 · 育兒大關 (二)</span>
+          <h2 class="text-2xl font-bold text-white mt-1">幼兒園類型與國小國中才藝安親班？</h2>
+          <p class="text-gray-400 text-sm mt-1">公幼 vs 私幼雙語，以及安親才藝班，長達 15 年的教育複利抉擇。</p>
+        </div>
+
+        <div class="space-y-5">
+          <!-- 幼兒園 -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">3~6 歲幼兒園</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button onclick="selectOption('kindergartenType', 'public', this)" class="option-btn text-left p-3.5 rounded-xl border border-gray-800 bg-gray-900/60 selected">
+                <div class="font-bold text-white text-sm">🏫 公立 / 非營利幼兒園</div>
+                <div class="text-xs text-accent-teal mt-1">政府高額補貼，月費僅約 1,500 ~ 2,000 元</div>
+              </button>
+              <button onclick="selectOption('kindergartenType', 'private', this)" class="option-btn text-left p-3.5 rounded-xl border border-gray-800 bg-gray-900/60">
+                <div class="font-bold text-white text-sm">🌟 私立雙語 / 蒙特梭利</div>
+                <div class="text-xs text-amber-300 mt-1">月費加學費平均約 22,000 ~ 28,000 元/月</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- 課後安親與才藝 -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">6~15 歲國小國中課後安排 (每位小孩)</label>
+            <div class="space-y-3">
+              <button onclick="selectOption('afterSchoolType', 'none', this)" class="option-btn text-left w-full p-3.5 rounded-xl border border-gray-800 bg-gray-900/60">
+                <div class="flex justify-between items-center text-sm font-bold text-white">
+                  <span>🌿 自然成長自習 (學校課後班)</span>
+                  <span class="text-accent-teal text-xs">月均約 2,500 元</span>
+                </div>
+                <p class="text-gray-400 text-xs mt-0.5">放學回家自動自發，省下所有校外補習費。</p>
+              </button>
+              <button onclick="selectOption('afterSchoolType', 'afterschool', this)" class="option-btn text-left w-full p-3.5 rounded-xl border border-gray-800 bg-gray-900/60 selected">
+                <div class="flex justify-between items-center text-sm font-bold text-white">
+                  <span>🎒 連鎖課輔安親班 (上班族標配)</span>
+                  <span class="text-brand-300 text-xs">月均約 10,000 元</span>
+                </div>
+                <p class="text-gray-400 text-xs mt-0.5">專人接送、顧作業、段考複習，雙薪家庭最省心。</p>
+              </button>
+              <button onclick="selectOption('afterSchoolType', 'talent', this)" class="option-btn text-left w-full p-3.5 rounded-xl border border-gray-800 bg-gray-900/60">
+                <div class="flex justify-between items-center text-sm font-bold text-white">
+                  <span>🎻 安親 ＋ 2~3 項專門才藝美語</span>
+                  <span class="text-rose-400 text-xs">月均約 24,000 元</span>
+                </div>
+                <p class="text-gray-400 text-xs mt-0.5">外師英文、樂器鋼琴、游泳體操，全力培養多元競爭力。</p>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 9: 投資理財與資產增長 -->
+      <div id="step-9" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 9 / 10 · 資本引擎</span>
+          <h2 class="text-2xl font-bold text-white mt-1">每月結餘資金的投資理財偏好？</h2>
+          <p class="text-gray-400 text-sm mt-1">決定了未來 30 年時間複利在平行時空中能為你賺取多少財富。</p>
+        </div>
+
+        <div class="space-y-3">
+          <button onclick="selectOption('investStrategy', 'conservative', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center font-bold text-white">
+              <span>🛡️ 保守防禦 (定存與儲蓄險)</span>
+              <span class="text-xs text-gray-400">年化實質回報約 1.8%</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">絕不冒險，資產波動為零，但長期會緩慢被通膨侵蝕購買力。</p>
+          </button>
+
+          <button onclick="selectOption('investStrategy', 'index', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800 selected">
+            <div class="flex justify-between items-center font-bold text-white">
+              <span>📈 被動指數 ETF (0050 / 006208 / VT)</span>
+              <span class="text-xs text-brand-300">歷史年化實質回報約 7.0%</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">跟隨全球與台灣經濟成長，不挑個股，最適合上班族的長期複利神器。</p>
+          </button>
+
+          <button onclick="selectOption('investStrategy', 'aggressive', this)" class="option-btn text-left w-full p-4 rounded-xl border border-gray-800 bg-gray-900/60 hover:bg-gray-800">
+            <div class="flex justify-between items-center font-bold text-white">
+              <span>🚀 積極個股與波段操作</span>
+              <span class="text-xs text-amber-300">預期年化約 9.5% (高波動)</span>
+            </div>
+            <p class="text-gray-400 text-xs mt-1">追求超額報酬，但每逢景氣週期將承受 25%~35% 的資產回撤考驗。</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 10: 台灣綜合所得稅確認與收尾 -->
+      <div id="step-10" class="step-card hidden">
+        <div class="mb-6">
+          <span class="text-brand-400 text-sm font-semibold tracking-wide uppercase">關卡 10 / 10 · 終局精算</span>
+          <h2 class="text-2xl font-bold text-white mt-1">台灣綜合所得稅即時精算預覽</h2>
+          <p class="text-gray-400 text-sm mt-1">依據 2026 現行法規（免稅額、標扣額、薪扣額、幼兒學前扣除與房貸利息列舉扣除）。</p>
+        </div>
+
+        <div class="bg-gray-900/90 border border-gray-800 rounded-2xl p-5 mb-6 space-y-4">
+          <div class="flex justify-between text-sm pb-2 border-b border-gray-800">
+            <span class="text-gray-400">家庭總申報所得</span>
+            <span id="tax-total-income" class="font-bold text-white">600,000 元</span>
+          </div>
+          <div class="flex justify-between text-sm pb-2 border-b border-gray-800">
+            <span class="text-gray-400">免稅額與扣除額總計</span>
+            <span id="tax-total-deductions" class="text-accent-teal font-medium">- 446,000 元</span>
+          </div>
+          <div class="flex justify-between text-sm pb-2 border-b border-gray-800">
+            <span class="text-gray-400">綜合所得淨額 (課稅級距)</span>
+            <span id="tax-net-income" class="font-bold text-white">154,000 元 (5%)</span>
+          </div>
+          <div class="flex justify-between text-base pt-1 font-bold">
+            <span class="text-brand-400">預估年度應繳稅額</span>
+            <span id="tax-final-pay" class="text-xl text-brand-300 font-black">7,700 元</span>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs text-brand-300 leading-relaxed mb-6">
+          💡 系統已同步在背景啟動 <span class="font-bold text-white">4 個平行時空引擎</span>：分別精算你的真實選擇、不買房存股、不生小孩存股、以及不買房不生小孩的終極自由資產！
+        </div>
+
+        <button onclick="calculateAndShowReport()" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-600 via-indigo-600 to-accent-teal hover:opacity-95 text-white font-extrabold text-lg shadow-xl shadow-brand-500/25 transition transform hover:-translate-y-0.5">
+          🔮 產生我的完整財務診斷與 4 大平行時空報告
+        </button>
+      </div>
+
+      <!-- Navigation Next/Prev buttons -->
+      <div id="nav-buttons" class="mt-8 flex justify-between items-center pt-4 border-t border-gray-800/80">
+        <button id="btn-prev" onclick="prevStep()" class="px-5 py-2.5 rounded-xl border border-gray-700 hover:bg-gray-800 text-gray-300 text-sm font-semibold transition disabled:opacity-30 disabled:pointer-events-none">
+          ← 上一題
+        </button>
+        <button id="btn-next" onclick="nextStep()" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-bold shadow-md shadow-brand-500/30 transition">
+          下一題 →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Screen 2: Final Report (Dual-layer: Social Card + Deep Report) -->
+    <div id="screen-report" class="hidden space-y-10">
+
+      <!-- TOP: Notification & Action Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-900/60 p-4 rounded-2xl border border-gray-800">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>🎉 財務推演完成！</span>
+          </h2>
+          <p class="text-xs text-gray-400">已成功推演至 65 歲退休，已完成 4 大平行時空資產計算。</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="exportSocialCard()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow transition flex items-center gap-1.5">
+            <span>📸 下載社群小卡</span>
+          </button>
+          <button onclick="copySummaryText()" class="px-4 py-2 rounded-xl border border-gray-700 hover:bg-gray-800 text-gray-300 text-xs font-medium transition">
+            📋 複製結論
+          </button>
+          <button onclick="restartSim()" class="px-4 py-2 rounded-xl border border-gray-800 hover:bg-gray-800 text-gray-400 text-xs font-medium transition">
+            🔄 重測
+          </button>
+        </div>
+      </div>
+
+      <!-- LAYER 1: Social Share Card (for IG / Threads / LINE screenshot) -->
+      <div class="flex justify-center">
+        <div id="social-card" class="w-full max-w-md rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-gray-900 via-indigo-950/70 to-gray-900 border border-brand-500/40 glass-glow relative overflow-hidden">
+          <!-- Background decorative glow -->
+          <div class="absolute -top-12 -right-12 w-40 h-40 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-accent-teal/15 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10">
+            <!-- Brand Tag -->
+            <div class="flex justify-between items-center mb-5">
+              <span class="text-xs font-bold tracking-wider text-brand-300 uppercase px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30">
+                TW Life Simulator 2026
+              </span>
+              <span class="text-[11px] text-gray-400 font-mono">#平行時空財務報告</span>
+            </div>
+
+            <!-- Financial Persona Title -->
+            <div class="mb-5">
+              <div class="text-xs text-gray-400 font-medium">你的專屬財務人格封號</div>
+              <h3 id="card-persona" class="text-2xl sm:text-3xl font-black text-white tracking-tight mt-1 bg-gradient-to-r from-white via-indigo-200 to-brand-300 bg-clip-text text-transparent">
+                竹科精算三明治人
+              </h3>
+              <p id="card-persona-desc" class="text-xs text-gray-300 mt-2 leading-relaxed">
+                背負房貸與生活重擔，但靠著出色的薪資排位與紀律投資，在夾縫中累積出極具韌性的資產底氣。
+              </p>
+            </div>
+
+            <!-- Core 4 Stats Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+              <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-gray-400">💼 全台薪資排位</div>
+                <div class="text-lg font-black text-white mt-1">PR <span id="card-pr" class="text-brand-400">78</span></div>
+                <div id="card-pr-sub" class="text-[10px] text-gray-400 mt-0.5">超越同儕中位數</div>
+              </div>
+              <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-gray-400">💰 65 歲預估淨資產</div>
+                <div class="text-lg font-black text-white mt-1"><span id="card-networth" class="text-accent-teal">3,450</span> 萬</div>
+                <div class="text-[10px] text-gray-400 mt-0.5">含房產淨值與投資</div>
+              </div>
+              <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-gray-400">🚦 現金流健康燈號</div>
+                <div id="card-cashflow" class="text-sm font-bold text-accent-teal mt-1">安全綠燈 (32%)</div>
+                <div class="text-[10px] text-gray-400 mt-0.5">房貸托育比適中</div>
+              </div>
+              <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-3.5">
+                <div class="text-[11px] text-gray-400">⏳ 預估 FIRE 自由</div>
+                <div class="text-lg font-black text-white mt-1"><span id="card-fire-age" class="text-accent-amber">56</span> 歲</div>
+                <div class="text-[10px] text-gray-400 mt-0.5">被動收入涵蓋生活</div>
+              </div>
+            </div>
+
+            <!-- Multiverse Micro Teaser -->
+            <div class="p-3.5 rounded-2xl bg-gray-950/70 border border-gray-800 text-[11px] space-y-1.5">
+              <div class="text-gray-400 font-semibold flex items-center justify-between">
+                <span>🌌 平行時空最高可能資產</span>
+                <span id="card-omega-nw" class="font-black text-accent-purple text-xs">5,820 萬元</span>
+              </div>
+              <p class="text-gray-400 text-[10px]">若在平行世界「不買房也不生小孩」，省下自備款與育兒金全額存股，65 歲資產將翻倍。</p>
+            </div>
+
+            <!-- Footer for Social -->
+            <div class="mt-5 pt-4 border-t border-gray-800/80 flex justify-between items-center text-[10px] text-gray-400">
+              <span>台灣人生財務模擬器 · 開源專案</span>
+              <span>截圖分享 @ Threads / IG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <a href="#deep-report-anchor" class="inline-flex items-center gap-1 text-sm font-bold text-brand-400 hover:text-brand-300">
+          <span>點擊查看 4 大平行時空對照圖表與深度處方簽</span>
+          <span>↓</span>
+        </a>
+      </div>
+
+      <!-- LAYER 2: Deep Report (4 Parallel Universes & Actionable Prescriptions) -->
+      <div id="deep-report-anchor" class="pt-6 border-t border-gray-800 space-y-8">
+
+        <!-- Multiverse Interactive Chart -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+            <div>
+              <span class="text-xs font-bold text-accent-purple uppercase tracking-wider">Parallel Universes</span>
+              <h3 class="text-2xl font-bold text-white mt-1">4 大平行時空 30 年資產累積推演</h3>
+              <p class="text-gray-400 text-xs mt-1">維持相同的薪水與基本消費，只改變「買房」與「生小孩」兩種核心現金流。</p>
+            </div>
+            <div class="flex flex-wrap gap-2 text-xs">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300">
+                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>時空 Alpha (你的選擇)
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>時空 Beta (不買房存股)
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-teal-500/20 text-teal-300">
+                <span class="w-2 h-2 rounded-full bg-teal-400"></span>時空 Gamma (不生小孩存股)
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300">
+                <span class="w-2 h-2 rounded-full bg-purple-400"></span>時空 Omega (終極自由)
+              </span>
+            </div>
+          </div>
+
+          <!-- Chart Canvas -->
+          <div class="relative w-full h-80 sm:h-96">
+            <canvas id="multiverseChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Multiverse Difference Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-5 rounded-2xl bg-gray-900/80 border border-amber-500/30">
+            <div class="text-xs font-bold text-amber-400">🏠 平行時空 Beta：若終身租屋</div>
+            <div class="text-2xl font-black text-white mt-2" id="diff-nohouse">+ 0 萬</div>
+            <p class="text-gray-400 text-xs mt-1.5" id="diff-nohouse-text">
+              省下頭期款與修繕費全額定期定額指數大盤，由於免除長期房貸利息，在複利驅動下...
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-gray-900/80 border border-teal-500/30">
+            <div class="text-xs font-bold text-teal-400">👶 平行時空 Gamma：若不生小孩</div>
+            <div class="text-2xl font-black text-white mt-2" id="diff-nochild">+ 0 萬</div>
+            <p class="text-gray-400 text-xs mt-1.5" id="diff-nochild-text">
+              免除月子中心、20 年托育、幼兒園與課後才藝班支出，現金流充沛，65 歲時資產...
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-gray-900/80 border border-purple-500/30">
+            <div class="text-xs font-bold text-purple-400">🕊️ 平行時空 Omega：終極自由</div>
+            <div class="text-2xl font-black text-white mt-2" id="diff-omega">+ 0 萬</div>
+            <p class="text-gray-400 text-xs mt-1.5">
+              人生兩大資本負擔皆轉為金融複利引擎，提早 12~15 年達成 FIRE 財富自由門檻。
+            </p>
+          </div>
+        </div>
+
+        <!-- 3 Actionable Prescriptions -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8">
+          <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+            <span>💊 專屬財務優化處方簽 (落地方案)</span>
+          </h3>
+          <div class="space-y-4" id="prescriptions-container">
+            <!-- Dynamic Prescriptions inserted by JS -->
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Accordion Table -->
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-lg font-bold text-white mb-4">📊 年度收支與所得稅核心模型結構 (現況)</h3>
+          <div class="overflow-x-auto text-xs">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="border-b border-gray-800 text-gray-400">
+                  <th class="py-2.5">項目</th>
+                  <th class="py-2.5">月平均估計</th>
+                  <th class="py-2.5">年度總金額</th>
+                  <th class="py-2.5">說明 / 法規依據</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-800/60 text-gray-300" id="breakdown-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-800/80 py-6 text-center text-xs text-gray-400 bg-gray-950">
+    <div class="max-w-4xl mx-auto px-4 space-y-2">
+      <p>開源專案 · 台灣人生財務模擬器 2026 · 數據參考行政院主計總處、內政部不動產平台與財政部賦稅署</p>
+      <p class="text-gray-400 text-[11px]">本工具僅供生涯財務情境與複利教育模擬使用，不代表任何形式之投資與借貸保證。</p>
+    </div>
+  </footer>
+
+  <!-- CORE LOGIC & DATA SCRIPT -->
+  <script>
+    // 1. DATA DICTIONARIES
+    // 22 縣市真實房屋總價(三房中位數，萬)與月租金(中位數，元)
+    const COUNTY_DATA = {
+      tpe: { name: '台北市', newHouse: 2900, usedHouse: 1950, rent: 28000 },
+      ntpc: { name: '新北市', newHouse: 1850, usedHouse: 1250, rent: 22000 },
+      tyc: { name: '桃園市', newHouse: 1350, usedHouse: 920, rent: 16500 },
+      hcc: { name: '新竹市', newHouse: 1950, usedHouse: 1350, rent: 21000 },
+      hch: { name: '新竹縣', newHouse: 1800, usedHouse: 1250, rent: 19000 },
+      klc: { name: '基隆市', newHouse: 850, usedHouse: 550, rent: 13000 },
+      ila: { name: '宜蘭縣', newHouse: 1080, usedHouse: 720, rent: 14000 },
+      txg: { name: '台中市', newHouse: 1550, usedHouse: 1050, rent: 18500 },
+      chw: { name: '彰化縣', newHouse: 1050, usedHouse: 720, rent: 13500 },
+      nth: { name: '南投縣', newHouse: 920, usedHouse: 620, rent: 12000 },
+      mlh: { name: '苗栗縣', newHouse: 950, usedHouse: 650, rent: 13000 },
+      ylh: { name: '雲林縣', newHouse: 880, usedHouse: 580, rent: 12000 },
+      tnn: { name: '台南市', newHouse: 1300, usedHouse: 880, rent: 15500 },
+      khh: { name: '高雄市', newHouse: 1380, usedHouse: 920, rent: 16000 },
+      cyi: { name: '嘉義市', newHouse: 1050, usedHouse: 700, rent: 14000 },
+      cyh: { name: '嘉義縣', newHouse: 860, usedHouse: 560, rent: 11500 },
+      pth: { name: '屏東縣', newHouse: 890, usedHouse: 590, rent: 12500 },
+      hua: { name: '花蓮縣', newHouse: 950, usedHouse: 650, rent: 13000 },
+      ttt: { name: '台東縣', newHouse: 900, usedHouse: 600, rent: 12500 },
+      pen: { name: '澎湖縣', newHouse: 920, usedHouse: 600, rent: 12000 },
+      kin: { name: '金門縣', newHouse: 980, usedHouse: 650, rent: 12500 },
+      lie: { name: '連江縣(馬祖)', newHouse: 920, usedHouse: 600, rent: 12000 }
+    };
+
+    // 產業中位數基準 (萬/年) 用於 PR 計算
+    const INDUSTRY_BENCHMARKS = {
+      tech: 85,
+      finance: 75,
+      professional: 65,
+      med_edu: 68,
+      manufacturing: 52,
+      service: 42,
+      freelance: 50
+    };
+
+    // 2. USER STATE
+    let currentStep = 1;
+    const totalSteps = 10;
+
+    let userState = {
+      age: 28,
+      industry: 'service',
+      salary: 60, // 萬/年
+      partnerType: 'single', // single, dual_income, single_income
+      partnerSalary: 60, // 萬/年
+      county: 'ntpc',
+      housingType: 'used_house', // rent, used_house, new_house
+      mortgageType: 'youth', // youth (40y), standard (30y)
+      transportType: 'transit', // transit, used_car, luxury_car
+      filialSupport: 0, // 元/月
+      insuranceType: 'basic', // nhi_only, basic, premium
+      childCount: 1, // 0, 1, 2
+      postpartumType: 'center', // home, doula, center
+      daycareType: 'daycare', // daycare, grandparent, quit_job
+      kindergartenType: 'public', // public, private
+      afterSchoolType: 'afterschool', // none, afterschool, talent
+      investStrategy: 'index' // conservative, index, aggressive
+    };
+
+    let chartInstance = null;
+
+    // 3. UI HANDLERS & NAVIGATION
+    function startWizard() {
+      document.getElementById('screen-intro').classList.add('hidden');
+      document.getElementById('screen-wizard').classList.remove('hidden');
+      document.getElementById('step-indicator').classList.remove('hidden');
+      document.getElementById('progress-container').classList.remove('hidden');
+      goToStep(1);
+      calculatePR();
+      updateTaxPreview();
+    }
+
+    function goToStep(step) {
+      currentStep = step;
+      document.getElementById('current-step-num').innerText = step;
+      document.getElementById('progress-bar').style.width = `${(step / totalSteps) * 100}%`;
+
+      for (let i = 1; i <= totalSteps; i++) {
+        const el = document.getElementById(`step-${i}`);
+        if (el) {
+          if (i === step) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      }
+
+      // Button controls
+      document.getElementById('btn-prev').disabled = (step === 1);
+      const nextBtn = document.getElementById('btn-next');
+      if (step === totalSteps) {
+        nextBtn.classList.add('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        goToStep(currentStep + 1);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        goToStep(currentStep - 1);
+      }
+    }
+
+    function restartSim() {
+      document.getElementById('screen-report').classList.add('hidden');
+      document.getElementById('screen-intro').classList.remove('hidden');
+      document.getElementById('step-indicator').classList.add('hidden');
+      document.getElementById('progress-container').classList.add('hidden');
+      currentStep = 1;
+    }
+
+    // Interactive Option Selection helper
+    function selectOption(category, value, el) {
+      userState[category] = value;
+      // remove selected style in current group
+      const parent = el.closest('.step-card') || el.parentElement;
+      const buttons = parent.querySelectorAll(`.option-btn`);
+      buttons.forEach(b => {
+        // Only toggle buttons in the same question container
+        if (b.parentElement === el.parentElement || b.closest('.grid') === el.closest('.grid') || b.closest('.space-y-3') === el.closest('.space-y-3')) {
+          b.classList.remove('selected');
+        }
+      });
+      el.classList.add('selected');
+
+      // Conditional field toggles
+      if (category === 'partnerType') {
+        const partnerBlock = document.getElementById('partner-salary-block');
+        if (value === 'dual_income') partnerBlock.classList.remove('hidden');
+        else partnerBlock.classList.add('hidden');
+      }
+
+      if (category === 'housingType') {
+        const mortgageBlock = document.getElementById('mortgage-plan-block');
+        if (value === 'rent') mortgageBlock.classList.add('hidden');
+        else mortgageBlock.classList.remove('hidden');
+      }
+
+      updateTaxPreview();
+    }
+
+    function setChildCount(count, el) {
+      userState.childCount = count;
+      const parent = el.parentElement;
+      parent.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+
+      const childcareOpts = document.getElementById('childcare-options');
+      if (count === 0) {
+        childcareOpts.classList.add('hidden');
+      } else {
+        childcareOpts.classList.remove('hidden');
+      }
+      updateTaxPreview();
+    }
+
+    // 4. PR CALCULATION LOGIC (Log-Normal fitting based on DGBAS 2026 data)
+    function updateAge(val) {
+      userState.age = parseInt(val);
+      document.getElementById('label-age').innerText = val;
+    }
+
+    function updateSalary(val) {
+      userState.salary = parseInt(val);
+      document.getElementById('label-salary').innerText = val;
+      calculatePR();
+      updateTaxPreview();
+    }
+
+    function updatePartnerSalary(val) {
+      userState.partnerSalary = parseInt(val);
+      document.getElementById('label-partner-salary').innerText = val;
+      updateTaxPreview();
+    }
+
+    function updateCountyData() {
+      userState.county = document.getElementById('input-county').value;
+      updateTaxPreview();
+    }
+
+    function calculatePR() {
+      userState.industry = document.getElementById('input-industry').value;
+      const salary = userState.salary; // in 萬
+
+      // 台灣全體受雇員工薪資 Log-Normal 擬合 (中位數 54 萬, PR90 約 135 萬, PR99 約 350 萬)
+      let taiwanPR = Math.round(100 / (1 + Math.exp(-1.45 * (Math.log(salary) - Math.log(54)))));
+      taiwanPR = Math.min(99, Math.max(5, taiwanPR));
+
+      // 產業 PR 擬合
+      const indMed = INDUSTRY_BENCHMARKS[userState.industry] || 54;
+      let indPR = Math.round(100 / (1 + Math.exp(-1.45 * (Math.log(salary) - Math.log(indMed)))));
+      indPR = Math.min(99, Math.max(5, indPR));
+
+      document.getElementById('pr-taiwan').innerText = taiwanPR;
+      document.getElementById('pr-industry').innerText = indPR;
+    }
+
+    // 5. TAIWAN INCOME TAX 2026 ENGINE
+    function calculateTaiwanTax(state) {
+      const isMarried = (state.partnerType === 'dual_income' || state.partnerType === 'single_income');
+      const annualIncome = state.salary * 10000;
+      const spouseIncome = state.partnerType === 'dual_income' ? (state.partnerSalary * 10000) : 0;
+      const totalIncome = annualIncome + spouseIncome;
+
+      // 1. 免稅額：9.7 萬 / 每人
+      const persons = 1 + (isMarried ? 1 : 0) + state.childCount;
+      const exemption = persons * 97000;
+
+      // 2. 標準扣除額：單身 13.1 萬 / 夫妻 26.2 萬
+      const stdDeduction = isMarried ? 262000 : 131000;
+
+      // 3. 薪資所得特別扣除額：上限 21.8 萬 / 每人
+      const salaryDeduction = Math.min(annualIncome, 218000) + (isMarried && spouseIncome > 0 ? Math.min(spouseIncome, 218000) : 0);
+
+      // 4. 幼兒學前特別扣除額：第 1 名 15 萬，第 2 名 22.5 萬
+      let preschoolDeduction = 0;
+      if (state.childCount >= 1) preschoolDeduction += 150000;
+      if (state.childCount >= 2) preschoolDeduction += (state.childCount - 1) * 225000;
+
+      // 5. 房貸利息特別扣除額 (自住購屋設算最高 18 萬)
+      const hasMortgage = state.housingType !== 'rent';
+      const mortgageDeduction = hasMortgage ? 180000 : 0;
+
+      const totalDeductions = exemption + stdDeduction + salaryDeduction + preschoolDeduction + mortgageDeduction;
+      const taxableIncome = Math.max(0, totalIncome - totalDeductions);
+
+      // 5 級累進稅率
+      let tax = 0;
+      let bracket = '免繳稅 (0%)';
+      if (taxableIncome <= 590000) {
+        tax = taxableIncome * 0.05;
+        bracket = '5%';
+      } else if (taxableIncome <= 1330000) {
+        tax = taxableIncome * 0.12 - 41300;
+        bracket = '12%';
+      } else if (taxableIncome <= 2660000) {
+        tax = taxableIncome * 0.20 - 147700;
+        bracket = '20%';
+      } else if (taxableIncome <= 4980000) {
+        tax = taxableIncome * 0.30 - 413700;
+        bracket = '30%';
+      } else {
+        tax = taxableIncome * 0.40 - 911700;
+        bracket = '40%';
+      }
+
+      return {
+        totalIncome,
+        totalDeductions,
+        taxableIncome,
+        tax: Math.max(0, Math.round(tax)),
+        bracket
+      };
+    }
+
+    function updateTaxPreview() {
+      const taxInfo = calculateTaiwanTax(userState);
+      const incomeEl = document.getElementById('tax-total-income');
+      const dedEl = document.getElementById('tax-total-deductions');
+      const netEl = document.getElementById('tax-net-income');
+      const payEl = document.getElementById('tax-final-pay');
+
+      if (incomeEl) incomeEl.innerText = `${(taxInfo.totalIncome).toLocaleString()} 元`;
+      if (dedEl) dedEl.innerText = `- ${(taxInfo.totalDeductions).toLocaleString()} 元`;
+      if (netEl) netEl.innerText = `${(taxInfo.taxableIncome).toLocaleString()} 元 (${taxInfo.bracket})`;
+      if (payEl) payEl.innerText = `${(taxInfo.tax).toLocaleString()} 元`;
+    }
+
+    // 6. MULTIVERSE SIMULATION ENGINE
+    function runSimulation() {
+      const countyInfo = COUNTY_DATA[userState.county] || COUNTY_DATA.ntpc;
+      const currentAge = userState.age;
+      const simYears = Math.max(10, 65 - currentAge);
+
+      // 投資報酬率對照
+      const investRates = {
+        conservative: 0.018,
+        index: 0.07,
+        aggressive: 0.092
+      };
+      const investRate = investRates[userState.investStrategy] || 0.07;
+
+      // 4 個時空追蹤器 (淨資產以 50 萬啟動金)
+      let alpha = { portfolio: 500000, houseEquity: 0, networth: 500000 };
+      let beta  = { portfolio: 500000, houseEquity: 0, networth: 500000 }; // 不買房
+      let gamma = { portfolio: 500000, houseEquity: 0, networth: 500000 }; // 不生小孩
+      let omega = { portfolio: 500000, houseEquity: 0, networth: 500000 }; // 不買房也不生
+
+      // 居住參數 (真實選擇)
+      let housePrice = 0;
+      if (userState.housingType === 'used_house') housePrice = countyInfo.usedHouse * 10000;
+      else if (userState.housingType === 'new_house') housePrice = countyInfo.newHouse * 10000;
+
+      const monthlyRent = countyInfo.rent;
+      const loanAmount = housePrice * 0.8;
+      const downPayment = housePrice > 0 ? (housePrice * 0.2 + (userState.housingType === 'used_house' ? 800000 : 400000)) : 0;
+
+      // 扣除頭期款
+      alpha.portfolio = Math.max(0, alpha.portfolio - downPayment * 0.5);
+      gamma.portfolio = Math.max(0, gamma.portfolio - downPayment * 0.5);
+
+      // 年度房貸計算 (本息均攤估計)
+      // 新青安 40 年 ~ 3.8% 年繳 (含利息與寬限期平均) / 商業 30 年 ~ 4.7% 年繳
+      const mortgageRateFactor = userState.mortgageType === 'youth' ? 0.038 : 0.047;
+      const annualMortgageAlpha = housePrice > 0 ? (loanAmount * mortgageRateFactor) : (monthlyRent * 12);
+      const annualRentBeta = monthlyRent * 12;
+
+      // 固定日常支出 (交通、孝親、保險)
+      const transportCostYear = userState.transportType === 'transit' ? 18000 : (userState.transportType === 'used_car' ? 70000 : 180000);
+      const filialCostYear = parseInt(userState.filialSupport) * 12;
+      const insuranceCostYear = (userState.insuranceType === 'nhi_only' ? 5000 : (userState.insuranceType === 'basic' ? 30000 : 65000)) * (userState.partnerType === 'dual_income' ? 2 : 1);
+
+      // 基礎雙人/單人年開銷 (伙食與日用品)
+      const baseLivingYear = (userState.partnerType === 'single' ? 240000 : 360000);
+
+      const labels = [];
+      const alphaSeries = [];
+      const betaSeries = [];
+      const gammaSeries = [];
+      const omegaSeries = [];
+
+      // 育兒單次支出 (月子中心/月嫂)
+      let postpartumOnce = 0;
+      if (userState.childCount > 0) {
+        if (userState.postpartumType === 'center') postpartumOnce = 260000 * userState.childCount;
+        else if (userState.postpartumType === 'doula') postpartumOnce = 120000 * userState.childCount;
+        else postpartumOnce = 40000 * userState.childCount;
+      }
+      alpha.portfolio = Math.max(0, alpha.portfolio - postpartumOnce);
+      beta.portfolio = Math.max(0, beta.portfolio - postpartumOnce);
+
+      // 稅額精算
+      const taxAlpha = calculateTaiwanTax(userState).tax;
+      const taxBeta  = calculateTaiwanTax({ ...userState, housingType: 'rent' }).tax;
+      const taxGamma = calculateTaiwanTax({ ...userState, childCount: 0 }).tax;
+      const taxOmega = calculateTaiwanTax({ ...userState, housingType: 'rent', childCount: 0 }).tax;
+
+      const grossIncome = (userState.salary * 10000) + (userState.partnerType === 'dual_income' ? userState.partnerSalary * 10000 : 0);
+
+      for (let t = 1; t <= simYears; t++) {
+        const age = currentAge + t;
+        labels.push(`${age}歲`);
+
+        // 薪資年成長率 (職涯前期微幅成長，後期持平)
+        const wageGrowth = t <= 15 ? 1 + (t * 0.015) : 1.22;
+        const currentYearIncome = grossIncome * wageGrowth;
+
+        // 育兒年度階段性開銷 (前 3 年托育、3-6幼兒園、7-18課後才藝)
+        let childYearCost = 0;
+        if (userState.childCount > 0 && t <= 20) {
+          if (t <= 3) {
+            childYearCost = userState.daycareType === 'daycare' ? 144000 : (userState.daycareType === 'grandparent' ? 108000 : 30000);
+          } else if (t <= 6) {
+            childYearCost = userState.kindergartenType === 'private' ? 260000 : 24000;
+          } else {
+            childYearCost = userState.afterSchoolType === 'talent' ? 288000 : (userState.afterSchoolType === 'afterschool' ? 120000 : 30000);
+          }
+          childYearCost = childYearCost * userState.childCount;
+        }
+
+        // --- 時空 Alpha (真實選擇) ---
+        const livingAlpha = baseLivingYear + transportCostYear + filialCostYear + insuranceCostYear + childYearCost + annualMortgageAlpha;
+        const savingsAlpha = Math.max(0, (currentYearIncome - taxAlpha) - livingAlpha);
+        alpha.portfolio = (alpha.portfolio + savingsAlpha) * (1 + investRate);
+        if (housePrice > 0 && t <= 30) {
+          alpha.houseEquity += (loanAmount / 30) + (housePrice * 0.015); // 房產本金清償 + 每年 1.5% 保守增值
+        }
+        alpha.networth = alpha.portfolio + alpha.houseEquity;
+
+        // --- 時空 Beta (不買房，全額存股) ---
+        const livingBeta = baseLivingYear + transportCostYear + filialCostYear + insuranceCostYear + childYearCost + annualRentBeta;
+        const savingsBeta = Math.max(0, (currentYearIncome - taxBeta) - livingBeta);
+        beta.portfolio = (beta.portfolio + savingsBeta) * (1 + investRate);
+        beta.networth = beta.portfolio;
+
+        // --- 時空 Gamma (不生小孩，全額存股) ---
+        const livingGamma = baseLivingYear + transportCostYear + filialCostYear + insuranceCostYear + annualMortgageAlpha;
+        const savingsGamma = Math.max(0, (currentYearIncome - taxGamma) - livingGamma);
+        gamma.portfolio = (gamma.portfolio + savingsGamma) * (1 + investRate);
+        if (housePrice > 0 && t <= 30) {
+          gamma.houseEquity += (loanAmount / 30) + (housePrice * 0.015);
+        }
+        gamma.networth = gamma.portfolio + gamma.houseEquity;
+
+        // --- 時空 Omega (不買房也不生小孩，雙自由) ---
+        const livingOmega = baseLivingYear + transportCostYear + filialCostYear + insuranceCostYear + annualRentBeta;
+        const savingsOmega = Math.max(0, (currentYearIncome - taxOmega) - livingOmega);
+        omega.portfolio = (omega.portfolio + savingsOmega) * (1 + investRate);
+        omega.networth = omega.portfolio;
+
+        alphaSeries.push(Math.round(alpha.networth / 10000));
+        betaSeries.push(Math.round(beta.networth / 10000));
+        gammaSeries.push(Math.round(gamma.networth / 10000));
+        omegaSeries.push(Math.round(omega.networth / 10000));
+      }
+
+      return {
+        labels,
+        alphaSeries,
+        betaSeries,
+        gammaSeries,
+        omegaSeries,
+        finalAlpha: alphaSeries[alphaSeries.length - 1],
+        finalBeta: betaSeries[betaSeries.length - 1],
+        finalGamma: gammaSeries[gammaSeries.length - 1],
+        finalOmega: omegaSeries[omegaSeries.length - 1],
+        taxInfo: calculateTaiwanTax(userState),
+        annualMortgageAlpha,
+        transportCostYear,
+        childYearCostSample: userState.childCount > 0 ? 180000 * userState.childCount : 0
+      };
+    }
+
+    // 7. RENDER REPORT & CHART
+    function calculateAndShowReport() {
+      const results = runSimulation();
+
+      document.getElementById('screen-wizard').classList.add('hidden');
+      document.getElementById('screen-report').classList.remove('hidden');
+
+      // Populate Social Card
+      const prVal = document.getElementById('pr-taiwan').innerText;
+      document.getElementById('card-pr').innerText = prVal;
+      document.getElementById('card-networth').innerText = (results.finalAlpha).toLocaleString();
+      document.getElementById('card-omega-nw').innerText = `${(results.finalOmega).toLocaleString()} 萬元`;
+
+      // Persona generation
+      let persona = "精算三明治築巢者";
+      let desc = "在房貸、托育與生活開銷中精打細算，雖然前期現金流吃緊，但靠著複利與不動產還款，穩步累積出堅固的家庭資產。";
+
+      if (userState.housingType === 'rent' && userState.childCount === 0) {
+        persona = "無拘無束自由存股神仙";
+        desc = "徹底擺脫不動產自備款與育兒重擔，將所有現金流全額投入時間複利，擁有最高自由度的提早退休進程。";
+      } else if (userState.housingType === 'rent') {
+        persona = "游牧家庭自由派";
+        desc = "堅持不被房貸套牢，把資金保留給小孩最好的教育與彈性生活，以金融資產複利做為最重要的養老靠山。";
+      } else if (userState.salary >= 130) {
+        persona = "高所得資本領航家";
+        desc = "位居全台頂尖收入排位，高儲蓄率有效稀釋了房貸與教育開銷，在 50 歲前就能看見驚人的資產指數型噴發。";
+      }
+      document.getElementById('card-persona').innerText = persona;
+      document.getElementById('card-persona-desc').innerText = desc;
+
+      // Cashflow indicator
+      const totalIncomeMonth = (results.taxInfo.totalIncome) / 12;
+      const debtMonth = results.annualMortgageAlpha / 12;
+      const dti = Math.round((debtMonth / totalIncomeMonth) * 100);
+      const cashflowEl = document.getElementById('card-cashflow');
+      if (dti <= 35) {
+        cashflowEl.innerText = `安全綠燈 (${dti}%)`;
+        cashflowEl.className = 'text-sm font-bold text-accent-teal mt-1';
+      } else if (dti <= 50) {
+        cashflowEl.innerText = `警戒黃燈 (${dti}%)`;
+        cashflowEl.className = 'text-sm font-bold text-amber-400 mt-1';
+      } else {
+        cashflowEl.innerText = `吃緊紅燈 (${dti}%)`;
+        cashflowEl.className = 'text-sm font-bold text-rose-400 mt-1';
+      }
+
+      // FIRE age estimation (when annual passive return 4% covers living expenses)
+      let fireAge = 65;
+      for (let i = 0; i < results.alphaSeries.length; i++) {
+        const netw = results.alphaSeries[i] * 10000;
+        if (netw * 0.04 >= 700000) {
+          fireAge = userState.age + i;
+          break;
+        }
+      }
+      document.getElementById('card-fire-age').innerText = fireAge;
+
+      // Multiverse Difference stats
+      const diffHouse = results.finalBeta - results.finalAlpha;
+      const diffChild = results.finalGamma - results.finalAlpha;
+      const diffOmega = results.finalOmega - results.finalAlpha;
+
+      document.getElementById('diff-nohouse').innerText = `${diffHouse >= 0 ? '+' : ''}${diffHouse.toLocaleString()} 萬`;
+      document.getElementById('diff-nohouse-text').innerText = diffHouse >= 0 
+        ? `若不買房改為租屋，省下的自備款與房貸溢價全投指數 ETF，到 65 歲你的金融流動資產將多出 ${diffHouse.toLocaleString()} 萬元。`
+        : `由於所選縣市租金較高或房價增值潛力佳，買房本金償還在長期累積下反而略勝純租屋 ${Math.abs(diffHouse).toLocaleString()} 萬元。`;
+
+      document.getElementById('diff-nochild').innerText = `+ ${diffChild.toLocaleString()} 萬`;
+      document.getElementById('diff-nochild-text').innerText = `若不生育子女，省去坐月子、20 年教育托育與生活開銷全數存股，65 歲退休資產將大幅躍升 ${diffChild.toLocaleString()} 萬元。`;
+
+      document.getElementById('diff-omega').innerText = `+ ${diffOmega.toLocaleString()} 萬`;
+
+      // Prescriptions Generation
+      const prescContainer = document.getElementById('prescriptions-container');
+      prescContainer.innerHTML = `
+        <div class="p-4 rounded-2xl bg-gray-900/60 border border-gray-800 flex gap-3.5 items-start">
+          <div class="text-xl">💡</div>
+          <div class="text-xs text-gray-300">
+            <span class="font-bold text-white text-sm block mb-1">房貸所得比與現金流處方</span>
+            你的月房貸與租金佔家庭月所得約 <strong>${dti}%</strong>。${dti > 38 ? '建議拉長年期至 40 年新青安，或保留至少 6 個月緊急生活預備金在活存，避免遇到升息或突發工作變動時斷頭。' : '房貸負擔落在健康的黃金安全區間，每月剩餘資金請務必維持定期定額紀律投入大盤 ETF。'}
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-900/60 border border-gray-800 flex gap-3.5 items-start">
+          <div class="text-xl">🎯</div>
+          <div class="text-xs text-gray-300">
+            <span class="font-bold text-white text-sm block mb-1">幼兒教育與才藝時間複利處方</span>
+            ${userState.childCount > 0 ? '若在幼兒園階段選擇公幼或非營利，每月省下的 2 萬元若定期定額 0050/VT（年化 7%），小孩 18 歲高中畢業時可無痛累積出近 <strong>850 萬元</strong> 的頂級出國留學教育金！' : '目前為無子女頂客/單身狀態，享受極高儲蓄率優勢，建議每年定期檢視資產再平衡，加速 FIRE 退休目標。'}
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-gray-900/60 border border-gray-800 flex gap-3.5 items-start">
+          <div class="text-xl">📑</div>
+          <div class="text-xs text-gray-300">
+            <span class="font-bold text-white text-sm block mb-1">2026 台灣所得稅合法節稅提醒</span>
+            你目前的綜合所得稅課稅級距落於 <strong>${results.taxInfo.bracket}</strong>。善用自用住宅購屋借款利息列舉扣除（最高 30 萬）與幼兒學前特別扣除額，可實質降低申報稅基，省下的每一塊稅款都是紮實的現金流。
+          </div>
+        </div>
+      `;
+
+      // Detailed Table Breakdown
+      const tbody = document.getElementById('breakdown-tbody');
+      tbody.innerHTML = `
+        <tr>
+          <td class="py-2.5 font-medium text-white">家庭總薪資收入</td>
+          <td>${Math.round(results.taxInfo.totalIncome / 12).toLocaleString()} 元</td>
+          <td class="text-accent-teal font-bold">${results.taxInfo.totalIncome.toLocaleString()} 元</td>
+          <td>全台受僱排位 PR ${prVal}</td>
+        </tr>
+        <tr>
+          <td class="py-2.5 font-medium text-white">綜合所得稅款</td>
+          <td>${Math.round(results.taxInfo.tax / 12).toLocaleString()} 元</td>
+          <td class="text-rose-400 font-bold">${results.taxInfo.tax.toLocaleString()} 元</td>
+          <td>適用稅率 ${results.taxInfo.bracket}</td>
+        </tr>
+        <tr>
+          <td class="py-2.5 font-medium text-white">居住成本 (房貸/租金)</td>
+          <td>${Math.round(results.annualMortgageAlpha / 12).toLocaleString()} 元</td>
+          <td>${Math.round(results.annualMortgageAlpha).toLocaleString()} 元</td>
+          <td>${userState.housingType === 'rent' ? '租金支出' : '本息償還 + 房屋增值'}</td>
+        </tr>
+        <tr>
+          <td class="py-2.5 font-medium text-white">育兒托育與教育 (推估)</td>
+          <td>${Math.round(results.childYearCostSample / 12).toLocaleString()} 元</td>
+          <td>${Math.round(results.childYearCostSample).toLocaleString()} 元</td>
+          <td>${userState.childCount} 胎 (隨年齡階段遞嬗)</td>
+        </tr>
+      `;
+
+      // Render Chart.js
+      renderMultiverseChart(results);
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderMultiverseChart(results) {
+      const ctx = document.getElementById('multiverseChart').getContext('2d');
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: results.labels,
+          datasets: [
+            {
+              label: '時空 Alpha：你的真實選擇',
+              data: results.alphaSeries,
+              borderColor: '#6366f1',
+              backgroundColor: 'rgba(99, 102, 241, 0.1)',
+              borderWidth: 3,
+              tension: 0.3,
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 6
+            },
+            {
+              label: '時空 Beta：終身租屋不買房',
+              data: results.betaSeries,
+              borderColor: '#f59e0b',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              tension: 0.3,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 6
+            },
+            {
+              label: '時空 Gamma：極致不生小孩',
+              data: results.gammaSeries,
+              borderColor: '#14b8a6',
+              borderDash: [4, 4],
+              borderWidth: 2,
+              tension: 0.3,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 6
+            },
+            {
+              label: '時空 Omega：不買房也不生小孩',
+              data: results.omegaSeries,
+              borderColor: '#a855f7',
+              borderWidth: 2.5,
+              tension: 0.3,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(17, 24, 39, 0.95)',
+              titleColor: '#ffffff',
+              bodyColor: '#e5e7eb',
+              borderColor: '#374151',
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.dataset.label}: NT$ ${context.parsed.y.toLocaleString()} 萬元`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: { color: '#9ca3af', maxTicksLimit: 8 }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.05)' },
+              ticks: {
+                color: '#9ca3af',
+                callback: function(value) {
+                  return value.toLocaleString() + ' 萬';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // 8. EXPORT SOCIAL CARD (HTML2CANVAS)
+    function exportSocialCard() {
+      const cardEl = document.getElementById('social-card');
+      const originalShadow = cardEl.style.boxShadow;
+      cardEl.style.boxShadow = 'none';
+
+      html2canvas(cardEl, {
+        scale: 3, // High-res for Retina displays
+        backgroundColor: '#0b0f19',
+        useCORS: true
+      }).then(canvas => {
+        cardEl.style.boxShadow = originalShadow;
+        const link = document.createElement('a');
+        link.download = `Taiwan_Life_Simulator_Report_${userState.age}y.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    // 9. COPY SUMMARY
+    function copySummaryText() {
+      const persona = document.getElementById('card-persona').innerText;
+      const pr = document.getElementById('card-pr').innerText;
+      const nw = document.getElementById('card-networth').innerText;
+      const omegaNw = document.getElementById('card-omega-nw').innerText;
+
+      const text = `🎮【台灣人生財務模擬器 2026】測驗結果：
+
+` +
+        `🏆 專屬財務封號：${persona}
+` +
+        `💼 全台薪資排位：PR ${pr}
+` +
+        `💰 65歲預估淨資產：NT$ ${nw} 萬元
+` +
+        `🌌 平行時空不買房不生子（Omega）：資產可達 ${omegaNw}
+
+` +
+        `👉 立即推演你的平行時空財務：${window.location.href}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('已複製測驗結果摘要！可直接貼至 LINE、Threads 或 IG 分享！');
+      });
+    }
+
+    // Initialize PR on load
+    window.addEventListener('DOMContentLoaded', () => {
+      calculatePR();
+      updateTaxPreview();
+    });
+  </script>
+</body>
+</html>
